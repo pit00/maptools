@@ -96,11 +96,10 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 	int k1[4], k2[4], j, j1, j2;
 
 	fp = fopen (CHAR(STRING_ELT(fn, 0)), "rb");
-	if (fp == NULL ) {
-		snprintf(msg, sizeof(msg), "Could not find file %s", CHAR(STRING_ELT(fn, 0)));
-		error(msg);
-
-	}
+	// if (fp == NULL ) {
+	// 	snprintf(msg, sizeof(msg), "Could not find file %s", CHAR(STRING_ELT(fn, 0)));
+	// 	error(msg);
+	// }
 
 	npols = getNpols(fp);
         line = 0;
@@ -331,25 +330,20 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 			fseek (fp, (long)((int) sizeof(struct GSHHS) + j2), SEEK_SET);
 			SET_VECTOR_ELT(plist, i, allocMatrix(REALSXP, j1, 2));
 			for (k = 0; k < j1; k++) {
-			    if (fread ((void *)&p, 
-				(size_t) sizeof(struct POINT), 
-				(size_t) 1, fp) != 1) {
-					snprintf (msg, sizeof(msg),
-			"Error reading file %s for %s %d, point %d.\n", 
-			CHAR(STRING_ELT(fn, 0)), name[line], 
-			INTEGER_POINTER(VECTOR_ELT(res, 0))[j], k);
-					error(msg);
-			    }
+			    // if (fread ((void *)&p, (size_t) sizeof(struct POINT), (size_t) 1, fp) != 1) {
+				// 	snprintf (msg, sizeof(msg), "Error reading file %s for %s %d, point %d.\n",  CHAR(STRING_ELT(fn, 0)), name[line], INTEGER_POINTER(VECTOR_ELT(res, 0))[j], k);
+				// 	error(msg);
+			    // }
 /*			    if (flip) {*/
 				swapb (&p.x, sizeof(int));
 				swapb (&p.y, sizeof(int));
-/*			    }*/
-			    lon = (INTEGER_POINTER(VECTOR_ELT(res, 4))[j] 
+/*				}*/
+				lon = (INTEGER_POINTER(VECTOR_ELT(res, 4))[j] 
 			    	&& p.x > max_east) ? 
 				p.x * GSHHS_SCL - 360.0 : p.x * GSHHS_SCL;
 			    lat = p.y * GSHHS_SCL;
-			    NUMERIC_POINTER(VECTOR_ELT(plist, i))[k] =  lon;
-			    NUMERIC_POINTER(VECTOR_ELT(plist, i))[k+j1] =  lat;
+				NUMERIC_POINTER(VECTOR_ELT(plist, i))[k] =  lon;
+				NUMERIC_POINTER(VECTOR_ELT(plist, i))[k+j1] =  lat;
 			}
 		    }
 		    fclose (fp);
@@ -398,4 +392,3 @@ int gshhs_pipbb(double pt1, double pt2, double *bbs) {
 		(gshhs_between(pt2, bbs[2], bbs[3]) == 1)) return(1);
 	else return(0);
 } 
-
